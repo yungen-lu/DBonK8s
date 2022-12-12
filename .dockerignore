@@ -1,0 +1,10 @@
+.dockerignore
+.gitignore
+.env.*
+Dockerfile
+Makefile
+**/*_test.go
+*.out
+.git/
+build/
+
