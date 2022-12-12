@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toc-linebot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: toc-linebot
+  template:
+    metadata:
+      labels:
+        app: toc-linebot
+    spec:
+      containers:
+        - name: dbonk8s
+          image: yungen/dbonk8s
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Never
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /ping
+              port: 80
+              scheme: HTTP
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /ping
+              port: 80
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+    
+

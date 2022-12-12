@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: toc-linebot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: toc-linebot
+  template:
+    metadata:
+      labels:
+        app: toc-linebot
+    spec:
+      containers:
+        - name: dbonk8s
+          env:
+            - name: HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: env-vars
+                  key: HTTP_PORT
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: env-vars
+                  key: LOG_LEVEL
+            - name: ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: ACCESS_TOKEN
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: SECRET

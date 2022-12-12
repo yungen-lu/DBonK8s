@@ -1,0 +1,24 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: toc-project--
+build:
+  artifacts:
+  - image: yungen/dbonk8s
+    docker:
+      dockerfile: Dockerfile
+manifests:
+  kustomize:
+    paths:
+    - kustomize/overlays/dev
+profiles:
+- name: base
+  manifests:
+    kustomize:
+      paths:
+      - kustomize/base
+- name: prod
+  manifests:
+    kustomize:
+      paths:
+      - kustomize/overlays/prod

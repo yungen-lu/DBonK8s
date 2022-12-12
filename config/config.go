@@ -1,9 +1,8 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/ilyakaznacheev/cleanenv"
+	log "github.com/sirupsen/logrus"
 )
 
 type (
@@ -54,7 +53,7 @@ func NewConfig() (*Config, error) {
 	// }
 	err := cleanenv.ReadConfig("./.env", cfg)
 	if err != nil {
-		return nil, fmt.Errorf("config error: %w", err)
+		log.Info("can't find .env will use env var")
 	}
 
 	err = cleanenv.ReadEnv(cfg)
