@@ -4,16 +4,20 @@ import (
 	"net/url"
 
 	"github.com/line/line-bot-sdk-go/v7/linebot"
+	"github.com/yungen-lu/TOC-Project-2022/internal/models"
 )
 
-func buildListCarousel(instances []*Instance) []*linebot.BubbleContainer {
+func buildListCarousel(instances []models.Instance) *linebot.CarouselContainer {
 	r := make([]*linebot.BubbleContainer, len(instances))
-	for _, l := range instances {
-		r = append(r, buildListFlexMessage(l.Name, l.Type, l.Namespace))
+	for i, l := range instances {
+		r[i] = buildListFlexMessage(l)
 	}
-	return r
+	return &linebot.CarouselContainer{
+		Type:     linebot.FlexContainerTypeCarousel,
+		Contents: r,
+	}
 }
-func buildListFlexMessage(dbname string, dbtype string, namespace string) *linebot.BubbleContainer {
+func buildListFlexMessage(model models.Instance) *linebot.BubbleContainer {
 	return &linebot.BubbleContainer{
 		Type: linebot.FlexContainerTypeBubble,
 		Hero: &linebot.ImageComponent{
@@ -28,7 +32,7 @@ func buildListFlexMessage(dbname string, dbtype string, namespace string) *lineb
 			Contents: []linebot.FlexComponent{
 				&linebot.TextComponent{
 					Type:   linebot.FlexComponentTypeText,
-					Text:   dbname,
+					Text:   model.Name,
 					Size:   linebot.FlexTextSizeTypeXl,
 					Weight: linebot.FlexTextWeightTypeBold,
 				},
@@ -51,7 +55,7 @@ func buildListFlexMessage(dbname string, dbtype string, namespace string) *lineb
 								},
 								&linebot.TextComponent{
 									Type: linebot.FlexComponentTypeText,
-									Text: dbtype,
+									Text: model.Type,
 									Size: linebot.FlexTextSizeTypeMd,
 									Flex: linebot.IntPtr(4),
 								},
@@ -70,7 +74,7 @@ func buildListFlexMessage(dbname string, dbtype string, namespace string) *lineb
 								},
 								&linebot.TextComponent{
 									Type: linebot.FlexComponentTypeText,
-									Text: namespace,
+									Text: model.Namespace,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
 								},
@@ -92,7 +96,7 @@ func buildListFlexMessage(dbname string, dbtype string, namespace string) *lineb
 					Height: linebot.FlexButtonHeightTypeSm,
 					Action: &linebot.PostbackAction{
 						Label: "Get Info",
-						Data:  buildQuery(map[string]string{"action": "info", "dbname": dbname, "ns": namespace}),
+						Data:  buildQuery(map[string]string{"action": "info", "dbname": model.Name, "ns": model.Namespace}),
 					},
 				},
 				&linebot.ButtonComponent{
@@ -101,14 +105,14 @@ func buildListFlexMessage(dbname string, dbtype string, namespace string) *lineb
 					Height: linebot.FlexButtonHeightTypeSm,
 					Action: &linebot.PostbackAction{
 						Label: "Delete",
-						Data:  buildQuery(map[string]string{"action": "delete", "dbname": dbname, "ns": namespace}),
+						Data:  buildQuery(map[string]string{"action": "delete", "dbname": model.Name, "ns": model.Namespace}),
 					},
 				},
 			},
 		},
 	}
 }
-func buildInfoFlexMessage(dbname string, dbtype string, user string, password string, namespace string) *linebot.BubbleContainer {
+func buildInfoFlexMessage(model *models.Instance) *linebot.BubbleContainer {
 	return &linebot.BubbleContainer{
 		Type: linebot.FlexContainerTypeBubble,
 		Body: &linebot.BoxComponent{
@@ -117,7 +121,7 @@ func buildInfoFlexMessage(dbname string, dbtype string, user string, password st
 			Contents: []linebot.FlexComponent{
 				&linebot.TextComponent{
 					Type:   linebot.FlexComponentTypeText,
-					Text:   dbname,
+					Text:   model.Name,
 					Size:   linebot.FlexTextSizeTypeXl,
 					Weight: linebot.FlexTextWeightTypeBold,
 				},
@@ -140,7 +144,7 @@ func buildInfoFlexMessage(dbname string, dbtype string, user string, password st
 								},
 								&linebot.TextComponent{
 									Type: linebot.FlexComponentTypeText,
-									Text: dbtype,
+									Text: model.Type,
 									Size: linebot.FlexTextSizeTypeMd,
 									Flex: linebot.IntPtr(4),
 								},
@@ -159,7 +163,7 @@ func buildInfoFlexMessage(dbname string, dbtype string, user string, password st
 								},
 								&linebot.TextComponent{
 									Type: linebot.FlexComponentTypeText,
-									Text: namespace,
+									Text: model.Namespace,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
 								},
@@ -178,7 +182,7 @@ func buildInfoFlexMessage(dbname string, dbtype string, user string, password st
 								},
 								&linebot.TextComponent{
 									Type: linebot.FlexComponentTypeText,
-									Text: user,
+									Text: model.User,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
 								},
@@ -197,7 +201,26 @@ func buildInfoFlexMessage(dbname string, dbtype string, user string, password st
 								},
 								&linebot.TextComponent{
 									Type: linebot.FlexComponentTypeText,
-									Text: password,
+									Text: model.Password,
+									Size: linebot.FlexTextSizeTypeSm,
+									Flex: linebot.IntPtr(4),
+								},
+							},
+						},
+						&linebot.BoxComponent{
+							Type:    linebot.FlexComponentTypeBox,
+							Layout:  linebot.FlexBoxLayoutTypeBaseline,
+							Spacing: linebot.FlexComponentSpacingTypeSm,
+							Contents: []linebot.FlexComponent{
+								&linebot.TextComponent{
+									Type: linebot.FlexComponentTypeText,
+									Text: "Endpoint",
+									Size: linebot.FlexTextSizeTypeSm,
+									Flex: linebot.IntPtr(2),
+								},
+								&linebot.TextComponent{
+									Type: linebot.FlexComponentTypeText,
+									Text: model.Endpoint,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
 								},

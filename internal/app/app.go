@@ -13,6 +13,7 @@ import (
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 	log "github.com/sirupsen/logrus"
 	"github.com/yungen-lu/TOC-Project-2022/config"
+	"github.com/yungen-lu/TOC-Project-2022/internal/client"
 	"github.com/yungen-lu/TOC-Project-2022/internal/controller/http/v1"
 )
 
@@ -23,13 +24,15 @@ const (
 )
 
 func Run(cfg *config.Config) {
+  log.SetReportCaller(true)
 	bot, err := linebot.New(cfg.Line.Secret, cfg.Line.Token)
 	if err != nil {
 		log.Error(err.Error())
-    return
+		return
 	}
+	k8sclient := client.New()
 	r := chi.NewRouter()
-	v1.NewRouter(r, bot)
+	v1.NewRouter(r, bot, k8sclient)
 	s := http.Server{
 		Addr:         ":" + cfg.HTTP.Port,
 		Handler:      r,

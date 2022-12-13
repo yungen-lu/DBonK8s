@@ -32,8 +32,9 @@ type (
 	}
 	// Line -.
 	Line struct {
-		Token  string `env:"ACCESS_TOKEN" env-required:"true"`
-		Secret string `env:"SECRET" env-required:"true"`
+		Token      string `env:"ACCESS_TOKEN" env-required:"true"`
+		Secret     string `env:"SECRET" env-required:"true"`
+		AdminToken string `env:"ADMIN_TOKEN" env-required:"true"`
 	}
 
 	// PG -.
@@ -42,6 +43,8 @@ type (
 	// 	URL     string `env-required:"true"                 env:"PG_URL"`
 	// }
 )
+
+var AdminToken string = "defaulttoken"
 
 // NewConfig returns app config.
 func NewConfig() (*Config, error) {
@@ -55,11 +58,11 @@ func NewConfig() (*Config, error) {
 	if err != nil {
 		log.Info("can't find .env will use env var")
 	}
-
 	err = cleanenv.ReadEnv(cfg)
 	if err != nil {
 		return nil, err
 	}
+	AdminToken = cfg.AdminToken
 
 	return cfg, nil
 }

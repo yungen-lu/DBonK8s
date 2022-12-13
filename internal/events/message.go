@@ -38,7 +38,11 @@ type infoOpts struct {
 
 type stopOpts infoOpts
 
-type createOpts infoOpts
+type createOpts struct {
+	DBName    string `short:"d" long:"dbname" description:"database name" required:"true"`
+	DBType    string `short:"t" long:"type" description:"database type" required:"true" choice:"postgres" choice:"mysql" choice:"redis" choice:"mongodb"`
+	Namespace string `short:"n" long:"namespace" description:"database namespace"`
+}
 
 func (c *Controller) HandleEventTypeMessage(event *linebot.Event) error {
 	switch message := event.Message.(type) {
@@ -65,7 +69,7 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 
 	cmd := args[0]
 	args = args[1:]
-	print(cmd, args)
+	println(cmd, args)
 
 	// var err error
 	switch cmd {
@@ -103,7 +107,7 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 		if err != nil {
 			return fmt.Errorf("create opts: %s", err.Error())
 		}
-		return u.FSM.Fire(CreateEvent, replyToken, opts.DBName, opts.Namespace)
+		return u.FSM.Fire(CreateEvent, replyToken, opts.DBName, opts.DBType, opts.Namespace)
 	default:
 		return errors.New("command not found")
 	}

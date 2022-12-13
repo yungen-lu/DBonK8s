@@ -9,16 +9,19 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/yungen-lu/TOC-Project-2022/internal/client"
 	"github.com/yungen-lu/TOC-Project-2022/internal/events"
 )
 
 type webhookHandler struct {
 	eventController *events.Controller
+	k8sclient       *client.K8sClient
 }
 
-func newWebHookHandler(bot *linebot.Client) func(r chi.Router) {
+func newWebHookHandler(bot *linebot.Client, cl *client.K8sClient) func(r chi.Router) {
 	whh := &webhookHandler{
-		eventController: events.NewController(bot),
+		eventController: events.NewController(bot, cl),
+		k8sclient:       cl,
 	}
 	// bot.ParseRequest()
 	return func(r chi.Router) {
