@@ -35,3 +35,8 @@ spec:
                 secretKeyRef:
                   name: env-secret
                   key: SECRET
+            - name: ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: env-secret
+                  key: ADMIN_TOKEN

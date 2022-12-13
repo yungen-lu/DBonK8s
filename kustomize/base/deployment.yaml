@@ -12,6 +12,7 @@ spec:
       labels:
         app: toc-linebot
     spec:
+      serviceAccountName: toc-linebot-sa
       containers:
         - name: dbonk8s
           image: yungen/dbonk8s

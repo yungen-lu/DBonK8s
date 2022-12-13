@@ -3,6 +3,8 @@ kind: Config
 metadata:
   name: toc-project--
 build:
+  local:
+    push: false
   artifacts:
   - image: yungen/dbonk8s
     docker:
