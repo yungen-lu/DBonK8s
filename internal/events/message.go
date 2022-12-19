@@ -108,6 +108,8 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 			return fmt.Errorf("create opts: %s", err.Error())
 		}
 		return u.FSM.Fire(CreateEvent, replyToken, opts.DBName, opts.DBType, opts.Namespace)
+	case "back":
+		return u.FSM.Fire(BackEvent)
 	default:
 		return errors.New("command not found")
 	}

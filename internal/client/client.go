@@ -43,20 +43,32 @@ func (k *K8sClient) upsertNamespace(ctx context.Context, b64namespace string) er
 	return nil
 
 }
+func getExternalIP(addrs []apiv1.NodeAddress) string {
+	for _, v := range addrs {
+		if v.Type == apiv1.NodeExternalIP {
+			return v.Address
+		}
+	}
+	return ""
+}
 func (k *K8sClient) GetEndPoint(ctx context.Context, namespace, dbname string) (string, error) {
 	// b64namespace := b64.StdEncoding.EncodeToString([]byte(namespace))
 	namespace = strings.ToLower(namespace)
-	serviceClient := k.clientset.CoreV1().Services(namespace)
-	service, err := serviceClient.Get(ctx, dbname, metav1.GetOptions{})
-	println(service.Spec.Ports[0].Port)
-	println(service.Spec.LoadBalancerIP)
-	println(service.Spec.ExternalIPs)
+	nodes, err := k.clientset.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return "", err
 	}
-	// println(service.Status.LoadBalancer.String())
-	// println(service.Status.LoadBalancer.Ingress[0].IP)
-	return fmt.Sprintf("%s:%d", "192.168.1.1", 5432), nil
+	var ips []string
+	for _, node := range nodes.Items {
+		ips = append(ips, getExternalIP(node.Status.Addresses))
+	}
+	serviceClient := k.clientset.CoreV1().Services(namespace)
+	service, err := serviceClient.Get(ctx, dbname, metav1.GetOptions{})
+	if err != nil {
+		return "", err
+	}
+	nodeport := service.Spec.Ports[0].NodePort
+	return fmt.Sprintf("%s:%d", ips[0], nodeport), nil
 
 }
 
