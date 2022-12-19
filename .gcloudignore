@@ -1,7 +1,6 @@
 .dockerignore
 .gitignore
 .env.*
-Dockerfile
 Makefile
 **/*_test.go
 *.out
@@ -11,4 +10,5 @@ token
 secret*
 terraform/
 kustomize/
+
 

@@ -10,3 +10,15 @@ resource "google_compute_firewall" "allow-ssh" {
 
   source_ranges = ["0.0.0.0/0"]
 }
+
+resource "google_compute_firewall" "allow-nodeport" {
+  name    = "allow-nodeport"
+  network = google_compute_network.main.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["30000-32767"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
