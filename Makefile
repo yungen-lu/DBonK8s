@@ -24,3 +24,7 @@ build: clean critic security lint
 
 run: build
 	$(BUILD_DIR)/$(APP_NAME)
+
+generate:
+	go build -o $(BUILD_DIR)/generate ./cmd/generate
+
