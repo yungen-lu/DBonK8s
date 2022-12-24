@@ -30,13 +30,8 @@ const (
 	InfoStateAdmin   = "info[admin]"
 	StopStateAdmin   = "stop[admin]"
 	CreateStateAdmin = "create[admin]"
-	// PostBackState    = "postback"
 )
 
-// type Event string
-
-//	UpgradePremissionEvent = "check premission"
-//
 // const (
 //
 //	ListEventUser        = "list instances[user]"
@@ -54,14 +49,12 @@ const (
 //
 // )
 const (
-	// UpgradePremissionEvent = "upgrade premission"
 	ListEvent   = "list instances"   // -a -n
 	ConfigEvent = "config user info" // -u -p -t
 	InfoEvent   = "show info"        // -d -n
 	StopEvent   = "stop instances"   // -d -n
 	CreateEvent = "create instances" // -d -t -n
-	// PostBackEvent = "postback"
-	BackEvent = "return to original state"
+	BackEvent   = "return to original state"
 )
 
 func NewUser(id string, con *Controller) *User {
@@ -86,7 +79,6 @@ func NewUser(id string, con *Controller) *User {
 		Permit(InfoEvent, InfoStateUser).
 		Permit(StopEvent, StopStateUser).
 		Permit(CreateEvent, CreateStateUser)
-		// Permit(PostBackEvent, PostBackState)
 
 	// ----------------------------------------------------------------------------------------------
 
@@ -127,17 +119,6 @@ func NewUser(id string, con *Controller) *User {
 			ns := args[3].(string)
 			return canEnterAdmin(ns, u.UserID)
 		})
-		// Permit(PostBackEvent, PostBackState)
-
-	// ----------------------------------------------------------------------------------------------
-
-	// u.FSM.Configure(PostBackState).
-	// 	Permit(BackEvent, UserState, func(ctx context.Context, args ...interface{}) bool {
-	// 		return !u.IsAdmin
-	// 	}).
-	// 	Permit(BackEvent, AdminState, func(ctx context.Context, args ...interface{}) bool {
-	// 		return u.IsAdmin
-	// 	})
 
 	// ----------------------------------------------------------------------------------------------
 
@@ -380,7 +361,7 @@ func NewUser(id string, con *Controller) *User {
 	return u
 }
 
-func canEnterListStateUser(all bool, ns string, id string) bool {
+func canEnterListStateUser(all bool, ns, id string) bool {
 	if all {
 		return false
 	}
@@ -389,6 +370,6 @@ func canEnterListStateUser(all bool, ns string, id string) bool {
 	}
 	return true
 }
-func canEnterAdmin(ns string, id string) bool {
+func canEnterAdmin(ns, id string) bool {
 	return ns != "" && ns != id
 }

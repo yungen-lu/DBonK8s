@@ -1,6 +1,5 @@
 package models
 
-
 type Instance struct {
 	Type     string
 	Name     string
@@ -10,4 +9,3 @@ type Instance struct {
 	Namespace string
 	Endpoint  string
 }
-

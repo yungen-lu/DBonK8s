@@ -1,10 +1,53 @@
 package client
 
 import (
+	"context"
+	"strings"
+
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+func (k *K8sClient) Create(ctx context.Context, namespace, dbtype, dbname, username, password string) error {
+	// b64namespace := b64.StdEncoding.EncodeToString([]byte(namespace))
+	namespace = strings.ToLower(namespace)
+	err := k.upsertNamespace(ctx, namespace)
+	if err != nil {
+		return err
+	}
+	deploymentsClient := k.clientset.AppsV1().Deployments(namespace)
+	serviceClient := k.clientset.CoreV1().Services(namespace)
+	var deployment *appsv1.Deployment
+	var service *apiv1.Service
+	switch dbtype {
+	case "postgres":
+		deployment = buildPostgresDeployment(dbname, username, password)
+		service = buildPostgresService(dbname)
+	case "mysql":
+		deployment = buildMysqlDeployment(dbname, username, password)
+		service = buildMysqlService(dbname)
+	case "redis":
+		deployment = buildRedisDeployment(dbname, username, password)
+		service = buildRedisService(dbname)
+	case "mongodb":
+		deployment = buildMongodbDeployment(dbname, username, password)
+		service = buildMongodbService(dbname)
+	default:
+		deployment = buildPostgresDeployment(dbname, username, password)
+		service = buildPostgresService(dbname)
+	}
+
+	_, err = deploymentsClient.Create(ctx, deployment, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	_, err = serviceClient.Create(ctx, service, metav1.CreateOptions{})
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func buildMysqlDeployment(dbname, username, password string) *appsv1.Deployment {
 	return &appsv1.Deployment{
@@ -81,6 +124,7 @@ func buildMysqlDeployment(dbname, username, password string) *appsv1.Deployment 
 		},
 	}
 }
+
 func buildMysqlService(dbname string) *apiv1.Service {
 	return &apiv1.Service{
 		ObjectMeta: metav1.ObjectMeta{
@@ -110,6 +154,7 @@ func buildMysqlService(dbname string) *apiv1.Service {
 	}
 
 }
+
 func buildPostgresDeployment(dbname, username, password string) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -181,6 +226,7 @@ func buildPostgresDeployment(dbname, username, password string) *appsv1.Deployme
 		},
 	}
 }
+
 func buildPostgresService(dbname string) *apiv1.Service {
 	return &apiv1.Service{
 		ObjectMeta: metav1.ObjectMeta{
@@ -209,6 +255,7 @@ func buildPostgresService(dbname string) *apiv1.Service {
 		},
 	}
 }
+
 func buildMongodbDeployment(dbname, username, password string) *appsv1.Deployment {
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{

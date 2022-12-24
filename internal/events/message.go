@@ -75,35 +75,35 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 	switch cmd {
 	case "config":
 		var opts configOpts
-		args, err = flags.ParseArgs(&opts, args)
+		_, err = flags.ParseArgs(&opts, args)
 		if err != nil {
 			return fmt.Errorf("config opts: %s", err.Error())
 		}
 		return u.FSM.Fire(ConfigEvent, replyToken, opts.UserName, opts.PassWord, opts.AdminToken)
 	case "list":
 		var opts listOpts
-		args, err = flags.ParseArgs(&opts, args)
+		_, err = flags.ParseArgs(&opts, args)
 		if err != nil {
 			return fmt.Errorf("list opts: %s", err.Error())
 		}
 		return u.FSM.Fire(ListEvent, replyToken, opts.All, opts.Namespace)
 	case "info":
 		var opts infoOpts
-		args, err = flags.ParseArgs(&opts, args)
+		_, err = flags.ParseArgs(&opts, args)
 		if err != nil {
 			return fmt.Errorf("info opts: %s", err.Error())
 		}
 		return u.FSM.Fire(InfoEvent, replyToken, opts.DBName, opts.Namespace)
 	case "stop":
 		var opts stopOpts
-		args, err = flags.ParseArgs(&opts, args)
+		_, err = flags.ParseArgs(&opts, args)
 		if err != nil {
 			return fmt.Errorf("stop opts: %s", err.Error())
 		}
 		return u.FSM.Fire(StopEvent, replyToken, opts.DBName, opts.Namespace)
 	case "create":
 		var opts createOpts
-		args, err = flags.ParseArgs(&opts, args)
+		_, err = flags.ParseArgs(&opts, args)
 		if err != nil {
 			return fmt.Errorf("create opts: %s", err.Error())
 		}
@@ -114,5 +114,4 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 		return errors.New("command not found")
 	}
 
-	// _, err := c.bot.ReplyMessage(replyToken, linebot.NewTextMessage("echo: "+message.Text)).Do()
 }

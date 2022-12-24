@@ -24,7 +24,7 @@ const (
 )
 
 func Run(cfg *config.Config) {
-  log.SetReportCaller(true)
+	log.SetReportCaller(true)
 	bot, err := linebot.New(cfg.Line.Secret, cfg.Line.Token)
 	if err != nil {
 		log.Error(err.Error())

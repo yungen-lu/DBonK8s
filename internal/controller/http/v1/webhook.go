@@ -33,12 +33,12 @@ func newWebHookHandler(bot *linebot.Client, cl *client.K8sClient) func(r chi.Rou
 func linebotMiddleWare(bot *linebot.Client) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			events, err := bot.ParseRequest(r)
+			event, err := bot.ParseRequest(r)
 			if err != nil {
 				log.Warn(err.Error())
 				return
 			}
-			r = r.WithContext(context.WithValue(r.Context(), "events", events))
+			r = r.WithContext(context.WithValue(r.Context(), "events", event))
 			next.ServeHTTP(w, r)
 		})
 
@@ -59,13 +59,13 @@ func linebotMiddleWare(bot *linebot.Client) func(next http.Handler) http.Handler
 // EventTypeUnsend            EventType = "unsend"
 // EventTypeVideoPlayComplete EventType = "videoPlayComplete"
 func (whh *webhookHandler) handle(w http.ResponseWriter, r *http.Request) {
-	events, ok := r.Context().Value("events").([]*linebot.Event)
+	linebotevents, ok := r.Context().Value("events").([]*linebot.Event)
 	if !ok {
 		log.Warn("can't find event in context")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	for _, event := range events {
+	for _, event := range linebotevents {
 		log.WithField("event", event.Type).Info("request")
 		var err error
 		switch event.Type {

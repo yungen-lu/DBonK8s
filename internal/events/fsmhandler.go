@@ -24,6 +24,7 @@ func (u *User) handleConfigStateEntry(replyToken, username, password, admintoken
 	}
 	return nil
 }
+
 func (u *User) handleListStateEntry(ctx context.Context, namespace string) ([]models.Instance, error) {
 	list, err := u.Con.k8sclient.ListInNamespace(ctx, namespace)
 	if err != nil {
@@ -34,6 +35,7 @@ func (u *User) handleListStateEntry(ctx context.Context, namespace string) ([]mo
 	}
 	return list, nil
 }
+
 func (u *User) handleInfoStateEntry(ctx context.Context, namespace, dbname string) (*models.Instance, error) {
 	// get info about dbname and reply
 	info, err := u.Con.k8sclient.GetPodInNamespace(ctx, namespace, dbname)
@@ -42,9 +44,11 @@ func (u *User) handleInfoStateEntry(ctx context.Context, namespace, dbname strin
 	}
 	return info, nil
 }
+
 func (u *User) handleStopStateEntry(ctx context.Context, namespace, dbname string) error {
 	return u.Con.k8sclient.Delete(ctx, namespace, dbname)
 }
+
 func (u *User) handleCreateStateEntry(ctx context.Context, namespace, dbtype, dbname string) error {
 	return u.Con.k8sclient.Create(ctx, namespace, dbtype, dbname, u.UserName, u.PassWord)
 }
