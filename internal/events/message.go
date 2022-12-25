@@ -110,6 +110,8 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 		return u.FSM.Fire(CreateEvent, replyToken, opts.DBName, opts.DBType, opts.Namespace)
 	case "back":
 		return u.FSM.Fire(BackEvent)
+	case "fsm":
+		return u.FSM.Fire(FSMEvent, replyToken)
 	default:
 		return errors.New("command not found")
 	}

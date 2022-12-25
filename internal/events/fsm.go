@@ -55,6 +55,7 @@ const (
 	StopEvent   = "stop instances"   // -d -n
 	CreateEvent = "create instances" // -d -t -n
 	BackEvent   = "return to original state"
+	FSMEvent    = "show fsm diagram"
 )
 
 func NewUser(id string, con *Controller) *User {
@@ -70,6 +71,7 @@ func NewUser(id string, con *Controller) *User {
 	u.FSM.SetTriggerParameters(InfoEvent, reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""))
 	u.FSM.SetTriggerParameters(StopEvent, reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""))
 	u.FSM.SetTriggerParameters(CreateEvent, reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""))
+	u.FSM.SetTriggerParameters(FSMEvent, reflect.TypeOf(""))
 
 	// ----------------------------------------------------------------------------------------------
 
@@ -78,7 +80,13 @@ func NewUser(id string, con *Controller) *User {
 		Permit(ConfigEvent, ConfigState).
 		Permit(InfoEvent, InfoStateUser).
 		Permit(StopEvent, StopStateUser).
-		Permit(CreateEvent, CreateStateUser)
+		Permit(CreateEvent, CreateStateUser).
+		InternalTransition(FSMEvent, func(ctx context.Context, args ...interface{}) error {
+			replyToken := args[0].(string)
+			_, err := u.Con.Bot.ReplyMessage(replyToken, linebot.NewImageMessage("https://i.imgur.com/sUXxv1c.png", "https://i.imgur.com/XQGR9h8.png")).WithContext(ctx).Do()
+			return err
+		})
+		// Permit(FSMEvent, UserState)
 
 	// ----------------------------------------------------------------------------------------------
 
@@ -118,6 +126,11 @@ func NewUser(id string, con *Controller) *User {
 		Permit(CreateEvent, CreateStateAdmin, func(ctx context.Context, args ...interface{}) bool {
 			ns := args[3].(string)
 			return canEnterAdmin(ns, u.UserID)
+		}).
+		InternalTransition(FSMEvent, func(ctx context.Context, args ...interface{}) error {
+			replyToken := args[0].(string)
+			_, err := u.Con.Bot.ReplyMessage(replyToken, linebot.NewImageMessage("https://i.imgur.com/sUXxv1c.png", "https://i.imgur.com/XQGR9h8.png")).WithContext(ctx).Do()
+			return err
 		})
 
 	// ----------------------------------------------------------------------------------------------
