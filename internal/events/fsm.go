@@ -71,7 +71,7 @@ func NewUser(id string, con *Controller) *User {
 		Permit(UserInfoEvent, UserInfoStateUser).
 		InternalTransition(FSMEvent, func(ctx context.Context, args ...interface{}) error {
 			replyToken := args[0].(string)
-			_, err := u.Con.Bot.ReplyMessage(replyToken, linebot.NewImageMessage("https://i.imgur.com/sUXxv1c.png", "https://i.imgur.com/XQGR9h8.png")).WithContext(ctx).Do()
+			_, err := u.Con.Bot.ReplyMessage(replyToken, linebot.NewImageMessage("https://i.imgur.com/tQa5ow0.png", "https://i.imgur.com/yzUw6uZ.png")).WithContext(ctx).Do()
 			return err
 		})
 
@@ -124,7 +124,7 @@ func NewUser(id string, con *Controller) *User {
 		}).
 		InternalTransition(FSMEvent, func(ctx context.Context, args ...interface{}) error {
 			replyToken := args[0].(string)
-			_, err := u.Con.Bot.ReplyMessage(replyToken, linebot.NewImageMessage("https://i.imgur.com/sUXxv1c.png", "https://i.imgur.com/XQGR9h8.png")).WithContext(ctx).Do()
+			_, err := u.Con.Bot.ReplyMessage(replyToken, linebot.NewImageMessage("https://i.imgur.com/tQa5ow0.png", "https://i.imgur.com/yzUw6uZ.png")).WithContext(ctx).Do()
 			return err
 		})
 
