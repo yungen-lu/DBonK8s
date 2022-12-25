@@ -39,7 +39,7 @@ func (k *K8sClient) GetEndPoint(ctx context.Context, namespace, dbname string) (
 	}
 	var ips []string
 	for _, node := range nodes.Items {
-		ips = append(ips, getExternalIP(node.Status.Addresses))
+		ips = append(append(ips, getExternalIP(node.Status.Addresses)), "\n")
 	}
 	for i := range nodes.Items {
 		node := &nodes.Items[i]
