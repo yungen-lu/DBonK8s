@@ -2,6 +2,7 @@ package events
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"github.com/line/line-bot-sdk-go/v7/linebot"
@@ -222,7 +223,7 @@ func NewUser(id string, con *Controller) *User {
 				log.WithField("err", err.Error()).Warn("handleStopStateUserEntry")
 				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(err.Error())).WithContext(ctx).Do()
 			} else {
-				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage("instances stopped")).WithContext(ctx).Do()
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(fmt.Sprintf("instance stopped: %s", dbname))).WithContext(ctx).Do()
 			}
 			if err != nil {
 				log.Warn(err.Error())
@@ -248,7 +249,7 @@ func NewUser(id string, con *Controller) *User {
 				log.WithField("err", err.Error()).Warn("handleCreateStateUserEntry")
 				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(err.Error())).WithContext(ctx).Do()
 			} else {
-				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage("instances created")).WithContext(ctx).Do()
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(fmt.Sprintf("instance created: %s", dbname))).WithContext(ctx).Do()
 			}
 			if err != nil {
 				log.Warn(err.Error())
@@ -353,7 +354,7 @@ func NewUser(id string, con *Controller) *User {
 				log.WithField("err", err.Error()).Warn("handleStopStateAdminEntry")
 				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(err.Error())).WithContext(ctx).Do()
 			} else {
-				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage("instances stopped")).WithContext(ctx).Do()
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(fmt.Sprintf("instance stopped: %s", dbname))).WithContext(ctx).Do()
 			}
 			if err != nil {
 				log.Warn(err.Error())
@@ -380,7 +381,7 @@ func NewUser(id string, con *Controller) *User {
 				log.WithField("err", err.Error()).Warn("handleCreateStateAdminEntry")
 				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(err.Error())).WithContext(ctx).Do()
 			} else {
-				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage("instances created")).WithContext(ctx).Do()
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(fmt.Sprintf("instance created: %s", dbname))).WithContext(ctx).Do()
 			}
 			if err != nil {
 				log.Warn(err.Error())
