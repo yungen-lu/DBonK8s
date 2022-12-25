@@ -5,10 +5,10 @@ resource "google_service_account" "kubernetes" {
 
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_node_pool
 resource "google_container_node_pool" "general" {
-  name       = "${var.project_id}-general"
-  cluster    = google_container_cluster.primary.id
-  node_count = 1
-  #  initial_node_count       = 1
+  name    = "${var.project_id}-general"
+  cluster = google_container_cluster.primary.id
+  # node_count = 1
+  initial_node_count = 1
 
   autoscaling {
     min_node_count = 1

@@ -21,7 +21,7 @@ func buildListFlexMessage(model models.Instance) *linebot.BubbleContainer {
 	return &linebot.BubbleContainer{
 		Type: linebot.FlexContainerTypeBubble,
 		Hero: &linebot.ImageComponent{
-			URL:         "https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+			URL:         getImageURL(model.Type),
 			Size:        linebot.FlexImageSizeTypeFull,
 			AspectRatio: linebot.FlexImageAspectRatioType1_51to1,
 			AspectMode:  linebot.FlexImageAspectModeTypeCover,
@@ -58,6 +58,7 @@ func buildListFlexMessage(model models.Instance) *linebot.BubbleContainer {
 									Text: model.Type,
 									Size: linebot.FlexTextSizeTypeMd,
 									Flex: linebot.IntPtr(4),
+									Wrap: true,
 								},
 							},
 						},
@@ -77,6 +78,7 @@ func buildListFlexMessage(model models.Instance) *linebot.BubbleContainer {
 									Text: model.Namespace,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
+									Wrap: true,
 								},
 							},
 						},
@@ -147,6 +149,7 @@ func buildInfoFlexMessage(model *models.Instance) *linebot.BubbleContainer {
 									Text: model.Type,
 									Size: linebot.FlexTextSizeTypeMd,
 									Flex: linebot.IntPtr(4),
+									Wrap: true,
 								},
 							},
 						},
@@ -166,6 +169,7 @@ func buildInfoFlexMessage(model *models.Instance) *linebot.BubbleContainer {
 									Text: model.Namespace,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
+									Wrap: true,
 								},
 							},
 						},
@@ -185,6 +189,7 @@ func buildInfoFlexMessage(model *models.Instance) *linebot.BubbleContainer {
 									Text: model.User,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
+									Wrap: true,
 								},
 							},
 						},
@@ -204,6 +209,7 @@ func buildInfoFlexMessage(model *models.Instance) *linebot.BubbleContainer {
 									Text: model.Password,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
+									Wrap: true,
 								},
 							},
 						},
@@ -223,6 +229,7 @@ func buildInfoFlexMessage(model *models.Instance) *linebot.BubbleContainer {
 									Text: model.Endpoint,
 									Size: linebot.FlexTextSizeTypeSm,
 									Flex: linebot.IntPtr(4),
+									Wrap: true,
 								},
 							},
 						},
@@ -247,4 +254,18 @@ func buildQuery(m map[string]string) string {
 	}
 	return v.Encode()
 
+}
+func getImageURL(dbtype string) string {
+	switch dbtype {
+	case "postgres":
+		return "https://i.imgur.com/75ZLw5s.png"
+	case "mysql":
+		return "https://i.imgur.com/xmUdGYB.png"
+	case "redis":
+		return "https://i.imgur.com/nJgwQOV.png"
+	case "mongodb":
+		return "https://i.imgur.com/NLt9Mje.png"
+	default:
+		return "https://i.imgur.com/75ZLw5s.png"
+	}
 }
