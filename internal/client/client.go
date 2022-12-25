@@ -38,9 +38,6 @@ func (k *K8sClient) GetEndPoint(ctx context.Context, namespace, dbname string) (
 		return "", err
 	}
 	var ips []string
-	for _, node := range nodes.Items {
-		ips = append(append(ips, getExternalIP(node.Status.Addresses)), "\n")
-	}
 	for i := range nodes.Items {
 		node := &nodes.Items[i]
 		ips = append(ips, getExternalIP(node.Status.Addresses))
@@ -54,8 +51,9 @@ func (k *K8sClient) GetEndPoint(ctx context.Context, namespace, dbname string) (
 	nodeport := service.Spec.Ports[0].NodePort
 	iplist := ""
 	for _, ip := range ips {
-		iplist += fmt.Sprintf("%s:%d", ip, nodeport)
+		iplist += fmt.Sprintf("%s:%d\n", ip, nodeport)
 	}
+	strings.TrimRight(iplist, "\n")
 	return iplist, nil
 
 }
