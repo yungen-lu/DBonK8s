@@ -79,42 +79,42 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 	switch cmd {
 	case "config":
 		var opts configOpts
-		_, err = flags.ParseArgs(&opts, args)
+		err = Parse("config", &opts, args)
 		if err != nil {
-			return fmt.Errorf("config opts: %s", err.Error())
+			return fmt.Errorf("info opts: %s", err.Error())
 		}
 		return u.FSM.Fire(ConfigEvent, replyToken, opts.UserName, opts.PassWord, opts.AdminToken)
 	case "list":
 		var opts listOpts
-		_, err = flags.ParseArgs(&opts, args)
+		err = Parse("list", &opts, args)
 		if err != nil {
-			return fmt.Errorf("list opts: %s", err.Error())
+			return fmt.Errorf("config opts: %s", err.Error())
 		}
 		return u.FSM.Fire(ListEvent, replyToken, opts.All, opts.Namespace)
 	case "info":
 		var opts infoOpts
-		_, err = flags.ParseArgs(&opts, args)
+		err = Parse("info", &opts, args)
 		if err != nil {
 			return fmt.Errorf("info opts: %s", err.Error())
 		}
 		return u.FSM.Fire(InfoEvent, replyToken, opts.DBName, opts.Namespace)
 	case "stop":
 		var opts stopOpts
-		_, err = flags.ParseArgs(&opts, args)
+		err = Parse("stop", &opts, args)
 		if err != nil {
 			return fmt.Errorf("stop opts: %s", err.Error())
 		}
 		return u.FSM.Fire(StopEvent, replyToken, opts.DBName, opts.Namespace)
 	case "create":
 		var opts createOpts
-		_, err = flags.ParseArgs(&opts, args)
+		err = Parse("create", &opts, args)
 		if err != nil {
 			return fmt.Errorf("create opts: %s", err.Error())
 		}
 		return u.FSM.Fire(CreateEvent, replyToken, opts.DBName, opts.DBType, opts.Namespace)
 	case "myinfo":
 		var opts userInfoOpts
-		_, err = flags.ParseArgs(&opts, args)
+		err = Parse("myinfo", &opts, args)
 		if err != nil {
 			return fmt.Errorf("create opts: %s", err.Error())
 		}
@@ -127,4 +127,16 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 		return errors.New("command not found")
 	}
 
+}
+func Parse(name string, data interface{}, args []string) error {
+	parser := flags.NewNamedParser(name, flags.Default)
+	_, err := parser.AddGroup("Application Options", "", data)
+	if err != nil {
+		return fmt.Errorf("config opts: %s", err.Error())
+	}
+	_, err = parser.ParseArgs(args)
+	if err != nil {
+		return fmt.Errorf("config opts: %s", err.Error())
+	}
+	return nil
 }
