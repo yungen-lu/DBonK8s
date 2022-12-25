@@ -19,43 +19,29 @@ type User struct {
 }
 
 const (
-	UserState        = "user"
-	ListStateUser    = "list[user]"
-	ConfigState      = "config"
-	InfoStateUser    = "info[user]"
-	StopStateUser    = "stop[user]"
-	CreateStateUser  = "create[user]"
-	AdminState       = "admin"
-	ListStateAdmin   = "list[admin]"
-	InfoStateAdmin   = "info[admin]"
-	StopStateAdmin   = "stop[admin]"
-	CreateStateAdmin = "create[admin]"
+	UserState          = "user"
+	ListStateUser      = "list[user]"
+	ConfigState        = "config"
+	InfoStateUser      = "info[user]"
+	StopStateUser      = "stop[user]"
+	CreateStateUser    = "create[user]"
+	UserInfoStateUser  = "userinfo[user]"
+	AdminState         = "admin"
+	ListStateAdmin     = "list[admin]"
+	InfoStateAdmin     = "info[admin]"
+	StopStateAdmin     = "stop[admin]"
+	CreateStateAdmin   = "create[admin]"
+	UserInfoStateAdmin = "userinfo[admin]"
 )
-
-// const (
-//
-//	ListEventUser        = "list instances[user]"
-//	ConfigEvent          = "config user info"
-//	InfoEventUser        = "show info[user]"
-//	StopEventUser        = "stop instances[user]"
-//	CreateEventUser      = "create instances[user]"
-//	ListEventAdmin       = "list instances[admin]"
-//	InfoEventAdmin       = "show info[admin]"
-//	StopEventAdmin       = "stop instances[admin]"
-//	CreateEventAdmin     = "create instances[admin]"
-//	PostBackEvent        = "postback"
-//	BackEventUser        = "return to user state[user]"
-//	BackEventAdmin       = "return to admin state[admin]"
-//
-// )
 const (
-	ListEvent   = "list instances"   // -a -n
-	ConfigEvent = "config user info" // -u -p -t
-	InfoEvent   = "show info"        // -d -n
-	StopEvent   = "stop instances"   // -d -n
-	CreateEvent = "create instances" // -d -t -n
-	BackEvent   = "return to original state"
-	FSMEvent    = "show fsm diagram"
+	ListEvent     = "list instances"   // -a -n
+	ConfigEvent   = "config user info" // -u -p -t
+	InfoEvent     = "show info"        // -d -n
+	StopEvent     = "stop instances"   // -d -n
+	CreateEvent   = "create instances" // -d -t -n
+	BackEvent     = "return to original state"
+	FSMEvent      = "show fsm diagram"
+	UserInfoEvent = "show user info" // -a
 )
 
 func NewUser(id string, con *Controller) *User {
@@ -72,6 +58,7 @@ func NewUser(id string, con *Controller) *User {
 	u.FSM.SetTriggerParameters(StopEvent, reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""))
 	u.FSM.SetTriggerParameters(CreateEvent, reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""))
 	u.FSM.SetTriggerParameters(FSMEvent, reflect.TypeOf(""))
+	u.FSM.SetTriggerParameters(UserInfoEvent, reflect.TypeOf(""), reflect.TypeOf(false))
 
 	// ----------------------------------------------------------------------------------------------
 
@@ -81,12 +68,12 @@ func NewUser(id string, con *Controller) *User {
 		Permit(InfoEvent, InfoStateUser).
 		Permit(StopEvent, StopStateUser).
 		Permit(CreateEvent, CreateStateUser).
+		Permit(UserInfoEvent, UserInfoStateUser).
 		InternalTransition(FSMEvent, func(ctx context.Context, args ...interface{}) error {
 			replyToken := args[0].(string)
 			_, err := u.Con.Bot.ReplyMessage(replyToken, linebot.NewImageMessage("https://i.imgur.com/sUXxv1c.png", "https://i.imgur.com/XQGR9h8.png")).WithContext(ctx).Do()
 			return err
 		})
-		// Permit(FSMEvent, UserState)
 
 	// ----------------------------------------------------------------------------------------------
 
@@ -126,6 +113,14 @@ func NewUser(id string, con *Controller) *User {
 		Permit(CreateEvent, CreateStateAdmin, func(ctx context.Context, args ...interface{}) bool {
 			ns := args[3].(string)
 			return canEnterAdmin(ns, u.UserID)
+		}).
+		Permit(UserInfoEvent, UserInfoStateUser, func(ctx context.Context, args ...interface{}) bool {
+			all := args[1].(bool)
+			return !(all && u.IsAdmin)
+		}).
+		Permit(UserInfoEvent, UserInfoStateAdmin, func(ctx context.Context, args ...interface{}) bool {
+			all := args[1].(bool)
+			return all && u.IsAdmin
 		}).
 		InternalTransition(FSMEvent, func(ctx context.Context, args ...interface{}) error {
 			replyToken := args[0].(string)
@@ -260,7 +255,29 @@ func NewUser(id string, con *Controller) *User {
 			}
 			return u.FSM.FireCtx(ctx, BackEvent)
 		})
+		// ----------------------------------------------------------------------------------------------
+	u.FSM.Configure(UserInfoStateUser).
+		Permit(BackEvent, UserState, func(ctx context.Context, args ...interface{}) bool {
+			return !u.IsAdmin
+		}).
+		Permit(BackEvent, AdminState, func(ctx context.Context, args ...interface{}) bool {
+			return u.IsAdmin
+		}).
+		OnEntryFrom(UserInfoEvent, func(ctx context.Context, args ...interface{}) error {
+			replyToken := args[0].(string)
 
+			reply, err := u.handleUserInfoStateEntry(ctx, false)
+			if err != nil {
+				log.WithField("err", err.Error()).Warn("handleUserInfoStateEntry")
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(err.Error())).WithContext(ctx).Do()
+			} else {
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(reply)).WithContext(ctx).Do()
+			}
+			if err != nil {
+				log.Warn(err.Error())
+			}
+			return u.FSM.FireCtx(ctx, BackEvent)
+		})
 	// ----------------------------------------------------------------------------------------------
 
 	u.FSM.Configure(ListStateAdmin).
@@ -364,6 +381,26 @@ func NewUser(id string, con *Controller) *User {
 				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(err.Error())).WithContext(ctx).Do()
 			} else {
 				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage("instances created")).WithContext(ctx).Do()
+			}
+			if err != nil {
+				log.Warn(err.Error())
+			}
+			return u.FSM.FireCtx(ctx, BackEvent)
+		})
+
+	// ----------------------------------------------------------------------------------------------
+	u.FSM.Configure(UserInfoStateAdmin).
+		Permit(BackEvent, AdminState).
+		OnEntryFrom(UserInfoEvent, func(ctx context.Context, args ...interface{}) error {
+			replyToken := args[0].(string)
+			all := args[1].(bool)
+
+			reply, err := u.handleUserInfoStateEntry(ctx, all)
+			if err != nil {
+				log.WithField("err", err.Error()).Warn("handleUserInfoStateEntry")
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(err.Error())).WithContext(ctx).Do()
+			} else {
+				_, err = u.Con.Bot.ReplyMessage(replyToken, linebot.NewTextMessage(reply)).WithContext(ctx).Do()
 			}
 			if err != nil {
 				log.Warn(err.Error())

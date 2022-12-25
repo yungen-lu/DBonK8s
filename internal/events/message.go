@@ -44,6 +44,10 @@ type createOpts struct {
 	Namespace string `short:"n" long:"namespace" description:"database namespace"`
 }
 
+type userInfoOpts struct {
+	All bool `short:"a" long:"all" description:"list all user"`
+}
+
 func (c *Controller) HandleEventTypeMessage(event *linebot.Event) error {
 	switch message := event.Message.(type) {
 	case *linebot.TextMessage:
@@ -108,6 +112,13 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 			return fmt.Errorf("create opts: %s", err.Error())
 		}
 		return u.FSM.Fire(CreateEvent, replyToken, opts.DBName, opts.DBType, opts.Namespace)
+	case "myinfo":
+		var opts userInfoOpts
+		_, err = flags.ParseArgs(&opts, args)
+		if err != nil {
+			return fmt.Errorf("create opts: %s", err.Error())
+		}
+		return u.FSM.Fire(UserInfoEvent, replyToken, opts.All)
 	case "back":
 		return u.FSM.Fire(BackEvent)
 	case "fsm":

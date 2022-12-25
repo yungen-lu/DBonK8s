@@ -2,6 +2,7 @@ package events
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/yungen-lu/TOC-Project-2022/config"
 	"github.com/yungen-lu/TOC-Project-2022/internal/models"
@@ -51,4 +52,25 @@ func (u *User) handleStopStateEntry(ctx context.Context, namespace, dbname strin
 
 func (u *User) handleCreateStateEntry(ctx context.Context, namespace, dbtype, dbname string) error {
 	return u.Con.k8sclient.Create(ctx, namespace, dbtype, dbname, u.UserName, u.PassWord)
+}
+
+func (u *User) handleUserInfoStateEntry(ctx context.Context, all bool) (string, error) {
+	if all {
+		users, err := u.Con.store.GetAllUser()
+		if err != nil {
+			return "", err
+		}
+		result := ""
+		for _, user := range users {
+			result += createUserInfo(user)
+		}
+		result = strings.TrimRight(result, "\n")
+		return result, nil
+	} else {
+		return createUserInfo(u), nil
+	}
+}
+
+func createUserInfo(u *User) string {
+	return "username:" + u.UserName + "\n" + "password:" + u.PassWord
 }

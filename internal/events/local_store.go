@@ -28,11 +28,24 @@ func (l *LocalStore) GetOrCreateUser(id string, con *Controller) (*User, error) 
 }
 
 func (l *LocalStore) GetUser(id string) (*User, error) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
+	l.mu.RLock()
+	defer l.mu.RUnlock()
 	if u, ok := l.users[id]; ok {
 		return u, nil
 	} else {
 		return nil, errors.New("can't find user")
 	}
+}
+
+func (l *LocalStore) GetAllUser() ([]*User, error) {
+	l.mu.RLock()
+	defer l.mu.RUnlock()
+	if len(l.users) == 0 {
+		return nil, errors.New("no user founded")
+	}
+	var users []*User
+	for _, u := range l.users {
+		users = append(users, u)
+	}
+	return users, nil
 }
