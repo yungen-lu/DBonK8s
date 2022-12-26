@@ -73,6 +73,10 @@ func (whh *webhookHandler) handle(w http.ResponseWriter, r *http.Request) {
 			err = whh.eventController.HandleEventTypeMessage(event)
 		case linebot.EventTypePostback:
 			err = whh.eventController.HandleEventTypePostBack(event)
+		case linebot.EventTypeFollow:
+			err = whh.eventController.HandleEventTypeFollow(event)
+		case linebot.EventTypeUnfollow:
+			// do nothing
 		default:
 			err = fmt.Errorf("no event hanlder for: %s\n", event.Type)
 		}

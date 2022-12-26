@@ -73,5 +73,5 @@ func (u *User) handleUserInfoStateEntry(ctx context.Context, all bool) (string, 
 }
 
 func createUserInfo(u *User) string {
-	return "username:" + u.UserName + "\n" + "password:" + u.PassWord + "\n" + "namespace:" + strings.ToLower(u.UserID) + "\n" + "admin:" + strconv.FormatBool(u.IsAdmin)
+	return "username:" + u.UserName + "\n" + "password:" + u.PassWord + "\n" + "namespace:" + strings.ToLower(u.UserID) + "\n" + "admin:" + strconv.FormatBool(u.IsAdmin) + "\n"
 }
