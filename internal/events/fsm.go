@@ -60,6 +60,9 @@ func NewUser(id string, con *Controller) *User {
 	u.FSM.SetTriggerParameters(CreateEvent, reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""), reflect.TypeOf(""))
 	u.FSM.SetTriggerParameters(FSMEvent, reflect.TypeOf(""))
 	u.FSM.SetTriggerParameters(UserInfoEvent, reflect.TypeOf(""), reflect.TypeOf(false))
+	u.FSM.OnTransitioned(func(ctx context.Context, t stateless.Transition) {
+		log.WithFields(log.Fields{"source": t.Source, "destination": t.Destination, "trigger": t.Trigger}).Info("state transitioned")
+	})
 
 	// ----------------------------------------------------------------------------------------------
 

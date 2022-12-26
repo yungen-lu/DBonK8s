@@ -73,9 +73,8 @@ func (c *Controller) handleText(message *linebot.TextMessage, replyToken string,
 
 	cmd := args[0]
 	args = args[1:]
-	println(cmd, args)
+	log.WithFields(log.Fields{"user": u.UserID, "cmd": cmd, "args": args}).Info("user sended command")
 
-	// var err error
 	switch cmd {
 	case "config":
 		var opts configOpts
