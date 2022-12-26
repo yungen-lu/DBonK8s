@@ -74,55 +74,55 @@ terraform apply
 
 * type `myinfo` to confirm
 
-  <img src="./assets/example-1.jpeg" alt="example-1" style="zoom:50%;" />
+  <img src="./assets/example-1.jpeg" alt="example-1" width="300" />
 
 ### Create a new database
 
 * type `create` along with database name and database type
 
-  <img src="./assets/example-2.jpeg" alt="example-2" style="zoom:50%;" />
+  <img src="./assets/example-2.jpeg" alt="example-2" width="300" />
 
 * type `list` to confirm
 
-  <img src="./assets/example-3.jpeg" alt="example-3" style="zoom:50%;" />
+  <img src="./assets/example-3.jpeg" alt="example-3" width="300" />
 
 * you can create multiple instances (not limited to different database type)
 
-  <img src="./assets/example-4.jpeg" alt="example-4" style="zoom:50%;" />
+  <img src="./assets/example-4.jpeg" alt="example-4" width="300" />
 
 ### Get Details of each instances
 
 * click `Get Info` button in the carousel
 
-  <img src="./assets/example-5.jpeg" alt="example-5" style="zoom:50%;" />
+  <img src="./assets/example-5.jpeg" alt="example-5" width="300" />
 
 * or type `info` with database name
 
-  <img src="./assets/example-6.jpeg" alt="example-6" style="zoom:50%;" />
+  <img src="./assets/example-6.jpeg" alt="example-6" width="300" />
 
 ### Delete a instance
 
 * click `Delete` button in the carousel
 
-  <img src="./assets/example-7.jpeg" alt="example-7" style="zoom:50%;" />
+  <img src="./assets/example-7.jpeg" alt="example-7" width="300" />
 
 * or type `stop ` with database name
 
-  <img src="./assets/example-8.jpeg" alt="example-8" style="zoom:50%;" />
+  <img src="./assets/example-8.jpeg" alt="example-8" width="300" />
 
 ### Change user permission to admin
 
 * type `config` with the `-t` flag followed by a token(you can change it during deploy)
 
-  <img src="./assets/example-9.jpeg" alt="example-9" style="zoom:50%;" />
+  <img src="./assets/example-9.jpeg" alt="example-9" width="300" />
 
 * type `list -a` to see all users instances
 
-  <img src="./assets/example-10.jpeg" alt="example-10" style="zoom:50%;" />
+  <img src="./assets/example-10.jpeg" alt="example-10" width="300" />
 
 * most of the command above can use the `-n` flag to specify the user namespace
 
-  <img src="./assets/example-11.jpeg" alt="example-11" style="zoom:50%;" />
+  <img src="./assets/example-11.jpeg" alt="example-11" width="300" />
 
 
 
