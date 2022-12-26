@@ -23,7 +23,6 @@ func newWebHookHandler(bot *linebot.Client, cl *client.K8sClient) func(r chi.Rou
 		eventController: events.NewController(bot, cl),
 		k8sclient:       cl,
 	}
-	// bot.ParseRequest()
 	return func(r chi.Router) {
 		r.Use(linebotMiddleWare(bot))
 		r.Post("/webhook", whh.handle)

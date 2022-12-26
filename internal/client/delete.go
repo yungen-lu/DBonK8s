@@ -9,10 +9,8 @@ import (
 )
 
 func (k *K8sClient) DeleteService(ctx context.Context, namespace, dbname string) error {
-	// b64namespace := b64.StdEncoding.EncodeToString([]byte(namespace))
 	namespace = strings.ToLower(namespace)
 	serviceClient := k.clientset.CoreV1().Services(namespace)
-	// _, err := serviceClient.Create(ctx, service, metav1.CreateOptions{})
 	deletePolicy := metav1.DeletePropagationForeground
 	return serviceClient.Delete(ctx, dbname, metav1.DeleteOptions{
 		PropagationPolicy: &deletePolicy,
@@ -20,7 +18,6 @@ func (k *K8sClient) DeleteService(ctx context.Context, namespace, dbname string)
 }
 
 func (k *K8sClient) Delete(ctx context.Context, namespace, dbname string) error {
-	// b64namespace := b64.StdEncoding.EncodeToString([]byte(namespace))
 	namespace = strings.ToLower(namespace)
 	deploymentsClient := k.clientset.AppsV1().Deployments(namespace)
 	deletePolicy := metav1.DeletePropagationForeground

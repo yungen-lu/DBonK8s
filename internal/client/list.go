@@ -10,7 +10,6 @@ import (
 )
 
 func (k *K8sClient) ListInNamespace(ctx context.Context, namespace string) ([]models.Instance, error) {
-	// b64namespace := b64.StdEncoding.EncodeToString([]byte(namespace))
 	namespace = strings.ToLower(namespace)
 	deploymentsClient := k.clientset.AppsV1().Deployments(namespace)
 	filter := &metav1.LabelSelector{}
@@ -32,13 +31,11 @@ func (k *K8sClient) ListInNamespace(ctx context.Context, namespace string) ([]mo
 }
 
 func (k *K8sClient) GetPodInNamespace(ctx context.Context, namespace, dbname string) (*models.Instance, error) {
-	// b64namespace := b64.StdEncoding.EncodeToString([]byte(namespace))
 	namespace = strings.ToLower(namespace)
 	podClient := k.clientset.CoreV1().Pods(namespace)
 	filter := &metav1.LabelSelector{}
 	filter = metav1.AddLabelToSelector(filter, "app", dbname)
 	filter = metav1.AddLabelToSelector(filter, "tag", "linebot")
-	// println(filter.String())
 	pod, err := podClient.List(ctx, metav1.ListOptions{Limit: 12, LabelSelector: metav1.FormatLabelSelector(filter)})
 	if err != nil {
 		return nil, err
@@ -48,7 +45,6 @@ func (k *K8sClient) GetPodInNamespace(ctx context.Context, namespace, dbname str
 	}
 	tmp := pod.Items[0]
 	dbtype := tmp.Labels["dbtype"]
-	// username, password := findUserPassword(dbtype, tmp.Spec.Containers[0].Env)
 	username, password := tmp.Spec.Containers[0].Env[0].Value, tmp.Spec.Containers[0].Env[1].Value
 	instance := &models.Instance{
 		Type:      dbtype,

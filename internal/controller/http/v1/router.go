@@ -11,6 +11,5 @@ func NewRouter(mux *chi.Mux, bot *linebot.Client, cl *client.K8sClient) {
 	mux.Use(middleware.Heartbeat("/ping"))
 	mux.Use(middleware.Recoverer)
 	mux.Group(newWebHookHandler(bot, cl))
-	// mux.Post("/webhook", )
 
 }

@@ -10,7 +10,6 @@ import (
 )
 
 func (k *K8sClient) Create(ctx context.Context, namespace, dbtype, dbname, username, password string) error {
-	// b64namespace := b64.StdEncoding.EncodeToString([]byte(namespace))
 	namespace = strings.ToLower(namespace)
 	err := k.upsertNamespace(ctx, namespace)
 	if err != nil {
@@ -141,13 +140,11 @@ func buildMysqlService(dbname string) *apiv1.Service {
 				"dbtype": "mysql",
 				"tag":    "linebot",
 			},
-			// Type: apiv1.ServiceTypeLoadBalancer,
 			Type: apiv1.ServiceTypeNodePort,
 			Ports: []apiv1.ServicePort{
 				{
 					Protocol: apiv1.ProtocolTCP,
 					Port:     3306,
-					// TargetPort: intstr.FromInt(5432),
 				},
 			},
 		},
@@ -243,13 +240,11 @@ func buildPostgresService(dbname string) *apiv1.Service {
 				"dbtype": "postgres",
 				"tag":    "linebot",
 			},
-			// Type: apiv1.ServiceTypeLoadBalancer,
 			Type: apiv1.ServiceTypeNodePort,
 			Ports: []apiv1.ServicePort{
 				{
 					Protocol: apiv1.ProtocolTCP,
 					Port:     5432,
-					// TargetPort: intstr.FromInt(5432),
 				},
 			},
 		},
@@ -344,13 +339,11 @@ func buildMongodbService(dbname string) *apiv1.Service {
 				"dbtype": "mongodb",
 				"tag":    "linebot",
 			},
-			// Type: apiv1.ServiceTypeLoadBalancer,
 			Type: apiv1.ServiceTypeNodePort,
 			Ports: []apiv1.ServicePort{
 				{
 					Protocol: apiv1.ProtocolTCP,
 					Port:     27017,
-					// TargetPort: intstr.FromInt(5432),
 				},
 			},
 		},
@@ -445,13 +438,11 @@ func buildRedisService(dbname string) *apiv1.Service {
 				"dbtype": "redis",
 				"tag":    "linebot",
 			},
-			// Type: apiv1.ServiceTypeLoadBalancer,
 			Type: apiv1.ServiceTypeNodePort,
 			Ports: []apiv1.ServicePort{
 				{
 					Protocol: apiv1.ProtocolTCP,
 					Port:     6379,
-					// TargetPort: intstr.FromInt(5432),
 				},
 			},
 		},
